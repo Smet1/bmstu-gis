@@ -58,6 +58,7 @@ func main() {
 
 		r.Route("/news", func(r chi.Router) {
 			r.Get("/", handlers.GetGetNewsHandler(conn))
+			r.Post("/", handlers.GetCreateNewsHandler(conn))
 		})
 	})
 

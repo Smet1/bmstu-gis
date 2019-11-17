@@ -49,16 +49,9 @@ func (l *ListNews) Get(db *sqlx.DB) error {
 SELECT title, payload, created
 FROM news
 `
-	rows, err := db.Queryx(query)
+	err := db.Select(&l.News, query)
 	if err != nil {
 		return errors.Wrap(err, "can't do query")
-	}
-
-	for rows.Next() {
-		err := rows.StructScan(&l.News)
-		if err != nil {
-			return errors.Wrap(err, "can't read news")
-		}
 	}
 
 	return nil
