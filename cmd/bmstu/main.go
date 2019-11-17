@@ -60,6 +60,12 @@ func main() {
 			r.Get("/", handlers.GetGetNewsHandler(conn))
 			r.Post("/", handlers.GetCreateNewsHandler(conn))
 		})
+
+		r.Route("/history", func(r chi.Router) {
+			r.Post("/", handlers.GetCreateHistoryHandler(conn))
+			r.Get("/{userID}", handlers.GetGetHistoryHandler(conn))
+			r.Delete("/{userID}", handlers.GetClearHistoryHandler(conn))
+		})
 	})
 
 	server := http.Server{
