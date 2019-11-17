@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/Smet1/bmstu-gis/internal/config"
-	"github.com/Smet1/bmstu-gis/internal/db"
-	"github.com/Smet1/bmstu-gis/internal/handlers"
-	"github.com/Smet1/bmstu-gis/internal/logger"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/Smet1/bmstu-gis/internal/config"
+	"github.com/Smet1/bmstu-gis/internal/db"
+	"github.com/Smet1/bmstu-gis/internal/handlers"
+	"github.com/Smet1/bmstu-gis/internal/logger"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -47,10 +48,10 @@ func main() {
 	mux := chi.NewRouter()
 	mux.Use(middleware.NoCache)
 	mux.Use(logger.GetLoggerMiddleware(log))
-	mux.Use(db.GetDbConnMiddleware(conn))
 
 	mux.Route("/api/users", func(r chi.Router) {
-		r.Post("/", handlers.GetCreateUserHandler(conn).ServeHTTP)
+		r.Post("/", handlers.GetCreateUserHandler(conn))
+		r.Get("/{userID}", handlers.GetGetUserHandler(conn))
 	})
 
 	server := http.Server{

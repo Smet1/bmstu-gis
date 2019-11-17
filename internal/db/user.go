@@ -10,24 +10,26 @@ import (
 )
 
 type User struct {
-	ID         int64     `db:"id"`
-	Login      string    `db:"login"`
-	Password   string    `db:"password"`
-	Registered time.Time `db:"registered"`
+	ID         int64     `db:"id" json:"id,omitempty"`
+	Login      string    `db:"login" json:"login,omitempty"`
+	Password   string    `db:"password" json:"password,omitempty"`
+	Registered time.Time `db:"registered" json:"registered,omitempty"`
 }
 
 func (u *User) Validate() error {
 	return validation.ValidateStruct(&u,
 		// Street cannot be empty, and the length must between 5 and 50
 		validation.Field(&u.Login, validation.Required, validation.Length(5, 50)),
+
+		validation.Field(&u.Password, validation.Required, validation.Length(3, 20)),
 	)
 }
 
 func (u *User) Insert(db *sqlx.DB) error {
 	u.Registered = time.Now()
 	query := `
-INSERT INTO users (login, password, avatar, karma, registered) 
-VALUES (:login, :password, :avatar, :karma, :registered)
+INSERT INTO users (login, password, registered) 
+VALUES (:login, :password, :registered)
 RETURNING id
 `
 	row, err := db.NamedQuery(query, u)
@@ -49,8 +51,19 @@ RETURNING id
 	return nil
 }
 
-func (u *User) Select() {
+func (u *User) Select(db *sqlx.DB, id int64) error {
+	u.Registered = time.Now()
+	query := `
+SELECT id, login, registered 
+FROM users 
+WHERE id = $1
+`
+	err := db.Get(u, query, id)
+	if err != nil {
+		return errors.Wrap(err, "can't do query")
+	}
 
+	return nil
 }
 
 func (u *User) Update() {
