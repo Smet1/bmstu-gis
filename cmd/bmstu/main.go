@@ -52,6 +52,7 @@ func main() {
 	mux.Route("/api/users", func(r chi.Router) {
 		r.Post("/", handlers.GetCreateUserHandler(conn))
 		r.Get("/{userID}", handlers.GetGetUserHandler(conn))
+		r.Post("/login", handlers.GetLoginUserHandler(conn))
 	})
 
 	server := http.Server{

@@ -51,14 +51,27 @@ RETURNING id
 	return nil
 }
 
-func (u *User) Select(db *sqlx.DB, id int64) error {
-	u.Registered = time.Now()
+func (u *User) GetByID(db *sqlx.DB, id int64) error {
 	query := `
 SELECT id, login, registered 
 FROM users 
 WHERE id = $1
 `
 	err := db.Get(u, query, id)
+	if err != nil {
+		return errors.Wrap(err, "can't do query")
+	}
+
+	return nil
+}
+
+func (u *User) GetByLogin(db *sqlx.DB, login string) error {
+	query := `
+SELECT id, login, password, registered 
+FROM users 
+WHERE login = $1
+`
+	err := db.Get(u, query, login)
 	if err != nil {
 		return errors.Wrap(err, "can't do query")
 	}

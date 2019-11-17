@@ -3,10 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/pkg/errors"
 
 	"github.com/Smet1/bmstu-gis/internal/db"
 	"github.com/Smet1/bmstu-gis/internal/logger"
@@ -48,7 +49,7 @@ func GetGetUserHandler(conn *sqlx.DB) http.HandlerFunc {
 		}
 
 		u := &db.User{}
-		err = u.Select(conn, int64(id))
+		err = u.GetByID(conn, int64(id))
 		if err != nil {
 			if errors.Cause(err) == sql.ErrNoRows {
 				Response(res, http.StatusNotFound, Error{Error: "user not found"})
@@ -57,7 +58,39 @@ func GetGetUserHandler(conn *sqlx.DB) http.HandlerFunc {
 
 			log.WithError(err).Error("can't get user")
 
-			Response(res, http.StatusBadRequest, Error{Error: "can't create user"})
+			Response(res, http.StatusBadRequest, Error{Error: "can't get user"})
+			return
+		}
+		u.ID = 0
+
+		Response(res, http.StatusOK, u)
+	}
+}
+
+func GetLoginUserHandler(conn *sqlx.DB) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		log := logger.GetLogger(req.Context())
+		pass := &db.User{}
+		body, _ := ioutil.ReadAll(req.Body)
+		defer req.Body.Close()
+		_ = json.Unmarshal(body, pass)
+
+		u := &db.User{}
+		err := u.GetByLogin(conn, pass.Login)
+		if err != nil {
+			if errors.Cause(err) == sql.ErrNoRows {
+				Response(res, http.StatusNotFound, Error{Error: "wrong login or password"})
+				return
+			}
+
+			log.WithError(err).Error("can't get user")
+
+			Response(res, http.StatusBadRequest, Error{Error: "can't get user"})
+			return
+		}
+
+		if u.Password != pass.Password {
+			Response(res, http.StatusBadRequest, Error{Error: "wrong login or password"})
 			return
 		}
 
