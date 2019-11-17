@@ -49,10 +49,16 @@ func main() {
 	mux.Use(middleware.NoCache)
 	mux.Use(logger.GetLoggerMiddleware(log))
 
-	mux.Route("/api/users", func(r chi.Router) {
-		r.Post("/", handlers.GetCreateUserHandler(conn))
-		r.Get("/{userID}", handlers.GetGetUserHandler(conn))
-		r.Post("/login", handlers.GetLoginUserHandler(conn))
+	mux.Route("/api", func(r chi.Router) {
+		r.Route("/users", func(r chi.Router) {
+			r.Post("/", handlers.GetCreateUserHandler(conn))
+			r.Get("/{userID}", handlers.GetGetUserHandler(conn))
+			r.Post("/login", handlers.GetLoginUserHandler(conn))
+		})
+
+		r.Route("/news", func(r chi.Router) {
+			r.Get("/", handlers.GetGetNewsHandler(conn))
+		})
 	})
 
 	server := http.Server{
