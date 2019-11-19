@@ -66,6 +66,13 @@ func main() {
 			r.Get("/{userID}", handlers.GetGetHistoryHandler(conn))
 			r.Delete("/{userID}", handlers.GetClearHistoryHandler(conn))
 		})
+
+		r.Route("/map", func(r chi.Router) {
+			r.Route("/point", func(r chi.Router) {
+				r.Post("/", handlers.GetCreatePointHandler(conn))
+				r.Get("/", handlers.GetGetPointsHandler(conn))
+			})
+		})
 	})
 
 	server := http.Server{
