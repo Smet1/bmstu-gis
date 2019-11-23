@@ -9,8 +9,8 @@ import (
 type Point struct {
 	ID      int64  `db:"id" json:"id,omitempty"`
 	Name    string `db:"name" json:"name,omitempty"`
-	Cabinet bool   `db:"cabinet" json:"cabinet,omitempty"`
-	Stair   bool   `db:"stair" json:"stair,omitempty"`
+	Cabinet bool   `db:"cabinet" json:"cabinet"`
+	Stair   bool   `db:"stair" json:"stair"`
 	X       int64  `db:"x" json:"x,omitempty"`
 	Y       int64  `db:"y" json:"y,omitempty"`
 	Level   int64  `db:"level" json:"level,omitempty"`
