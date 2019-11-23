@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS map_points
     x       int  NOT NULL,
     y       int  NOT NULL,
     level   int  NOT NULL,
-    node_id int  NOT NULL REFERENCES map_points (id)
+    node_id int REFERENCES map_points (id)
 );
 -- +goose StatementEnd
 
