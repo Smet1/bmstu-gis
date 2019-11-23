@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"github.com/Smet1/bmstu-gis/internal/pathfinding"
 	"net/http"
 	"os"
 	"os/signal"
@@ -45,6 +47,15 @@ func main() {
 		log.WithError(err).Fatal("can't create db connection")
 	}
 
+	mapBMSTU, err := pathfinding.InitMap(conn)
+	if err != nil {
+		log.WithError(err).Fatal("can't create map")
+	}
+	path := mapBMSTU.Path(21-10, 32-10)
+	for _, p := range path {
+		fmt.Println(p + 10)
+	}
+	return
 	mux := chi.NewRouter()
 	mux.Use(middleware.NoCache)
 	mux.Use(logger.GetLoggerMiddleware(log))

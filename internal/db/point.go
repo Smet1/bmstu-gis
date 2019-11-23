@@ -7,14 +7,14 @@ import (
 )
 
 type Point struct {
-	ID      int64  `db:"id" json:"id,omitempty"`
-	Name    string `db:"name" json:"name,omitempty"`
-	Cabinet bool   `db:"cabinet" json:"cabinet"`
-	Stair   bool   `db:"stair" json:"stair"`
-	X       int64  `db:"x" json:"x,omitempty"`
-	Y       int64  `db:"y" json:"y,omitempty"`
-	Level   int64  `db:"level" json:"level,omitempty"`
-	NodeID  int64  `db:"node_id" json:"node_id,omitempty"`
+	ID      int64         `db:"id" json:"id,omitempty"`
+	Name    string        `db:"name" json:"name,omitempty"`
+	Cabinet bool          `db:"cabinet" json:"cabinet"`
+	Stair   bool          `db:"stair" json:"stair"`
+	X       int64         `db:"x" json:"x,omitempty"`
+	Y       int64         `db:"y" json:"y,omitempty"`
+	Level   int64         `db:"level" json:"level,omitempty"`
+	NodeID  sql.NullInt64 `db:"node_id" json:"node_id,omitempty"`
 }
 
 func (p *Point) Insert(db *sqlx.DB) error {
@@ -48,7 +48,7 @@ type ListPoints struct {
 
 func (l *ListPoints) Get(db *sqlx.DB) error {
 	query := `
-SELECT id, name, cabinet, stair, x, y, level
+SELECT id, name, cabinet, stair, x, y, level, node_id
 FROM map_points
 `
 	err := db.Select(&l.Points, query)

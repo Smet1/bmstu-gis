@@ -13,5 +13,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/net v0.0.0-20191116160921-f9c825593386 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
+	gopkg.in/karalabe/cookiejar.v2 v2.0.0-20150724131613-8dcd6a7f4951
 	gopkg.in/yaml.v2 v2.2.5
 )
