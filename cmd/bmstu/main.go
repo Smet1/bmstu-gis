@@ -17,7 +17,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/kr/pretty"
 	"github.com/onrik/logrus/filename"
 	"github.com/sirupsen/logrus"
 )
@@ -52,15 +51,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatal("can't create map")
 	}
-	path, err := mapBMSTU.Path("TP", "21")
-	if err != nil {
-		log.WithError(err).Fatal("can't find path")
-	}
-	//for _, p := range path {
-	//	fmt.Println(p + 10)
-	//}
-	_, _ = pretty.Println(path)
-	return
+
 	mux := chi.NewRouter()
 	mux.Use(middleware.NoCache)
 	mux.Use(logger.GetLoggerMiddleware(log))
@@ -87,6 +78,10 @@ func main() {
 			r.Route("/point", func(r chi.Router) {
 				r.Post("/", handlers.GetCreatePointHandler(conn))
 				r.Get("/", handlers.GetGetPointsHandler(conn))
+			})
+
+			r.Route("/search", func(r chi.Router) {
+				r.Get("/", handlers.GetPathFindingHandler(conn, mapBMSTU))
 			})
 		})
 	})
