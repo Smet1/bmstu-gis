@@ -34,6 +34,7 @@ func main() {
 
 	log := logrus.New()
 	log.AddHook(filenameHook)
+	log.SetFormatter(&logrus.JSONFormatter{})
 
 	cfg := &config.Config{}
 	err := config.ReadConfig(*configPath, &cfg)
