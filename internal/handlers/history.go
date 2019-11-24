@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+
 	"github.com/Smet1/bmstu-gis/internal/db"
 	"github.com/Smet1/bmstu-gis/internal/logger"
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
-	"io/ioutil"
-	"net/http"
-	"strconv"
 )
 
 func GetCreateHistoryHandler(conn *sqlx.DB) http.HandlerFunc {

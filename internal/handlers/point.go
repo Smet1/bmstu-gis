@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/Smet1/bmstu-gis/internal/db"
 	"github.com/Smet1/bmstu-gis/internal/logger"
 	"github.com/jmoiron/sqlx"
-	"io/ioutil"
-	"net/http"
 )
 
 func GetGetPointsHandler(conn *sqlx.DB) http.HandlerFunc {

@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/kr/pretty v0.1.0
 	github.com/lib/pq v1.2.0
 	github.com/onrik/logrus v0.4.1
 	github.com/pkg/errors v0.8.1

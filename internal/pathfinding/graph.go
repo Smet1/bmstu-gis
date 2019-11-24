@@ -9,10 +9,15 @@ import (
 )
 
 type Map struct {
-	graph *graph.Graph
-	//BFS    *bfs.Bfs
-	Points db.ListPoints
-	DbConn *sqlx.DB
+	graph       *graph.Graph
+	EndPoints   map[string]*db.Point
+	StairPoints map[string]*db.Point
+	allPoints   map[int64]*db.Point
+	Points      db.ListPoints
+	DbConn      *sqlx.DB
+	// тк в графе начало с 0, а айдишнки могут быть любыми, то нужно хранить эту разницу для правильного перевода точек
+	// костыль пезда
+	dirtyHackIDs int64
 }
 
 func InitMap(conn *sqlx.DB) (*Map, error) {
@@ -22,15 +27,22 @@ func InitMap(conn *sqlx.DB) (*Map, error) {
 		return nil, errors.Wrap(err, "can't get points")
 	}
 
-	mp := make(map[int64]*db.Point)
-	for i := range points.Points {
-		mp[points.Points[i].ID] = points.Points[i]
-	}
+	endPoints := make(map[string]*db.Point)
+	stairPoints := make(map[string]*db.Point)
+	allPoints := make(map[int64]*db.Point)
 
 	gr := graph.New(len(points.Points))
-	//b := bfs.New(gr, int(points.Points[0].ID))
 	minus := points.Points[0].ID
 	for i := range points.Points {
+		allPoints[points.Points[i].ID] = points.Points[i]
+
+		switch {
+		case points.Points[i].Cabinet:
+			endPoints[points.Points[i].Name] = points.Points[i]
+		case points.Points[i].Stair:
+			stairPoints[points.Points[i].Name] = points.Points[i]
+		}
+
 		if !points.Points[i].NodeID.Valid {
 			continue
 		}
@@ -39,14 +51,41 @@ func InitMap(conn *sqlx.DB) (*Map, error) {
 	}
 
 	return &Map{
-		graph: gr,
-		//BFS:    b,
-		Points: *points,
-		DbConn: conn,
+		graph:        gr,
+		EndPoints:    endPoints,
+		StairPoints:  stairPoints,
+		allPoints:    allPoints,
+		Points:       *points,
+		DbConn:       conn,
+		dirtyHackIDs: minus,
 	}, nil
 }
 
-func (m *Map) Path(src, dest int64) []int {
-	b := bfs.New(m.graph, int(src))
-	return b.Path(int(dest))
+func (m *Map) pathInt(src, dest int64) []int {
+	b := bfs.New(m.graph, int(src-m.dirtyHackIDs))
+	return b.Path(int(dest - m.dirtyHackIDs))
+}
+
+func (m *Map) Path(srcName, destName string) (*db.ListPoints, error) {
+	src, ok := m.EndPoints[srcName]
+	if !ok {
+		return nil, errors.New("can't find source point")
+	}
+
+	dest, ok := m.EndPoints[destName]
+	if !ok {
+		return nil, errors.New("can't find end point")
+	}
+
+	path := m.pathInt(src.ID, dest.ID)
+	if len(path) == 0 {
+		return nil, errors.New("can't find path between src and dest points")
+	}
+
+	points := make([]*db.Point, 0, len(path))
+	for i := range path {
+		points = append(points, m.allPoints[int64(path[i])+m.dirtyHackIDs])
+	}
+
+	return &db.ListPoints{Points: points}, nil
 }

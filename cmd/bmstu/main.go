@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
-	"github.com/Smet1/bmstu-gis/internal/pathfinding"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/Smet1/bmstu-gis/internal/pathfinding"
 
 	"github.com/Smet1/bmstu-gis/internal/config"
 	"github.com/Smet1/bmstu-gis/internal/db"
@@ -17,6 +17,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/kr/pretty"
 	"github.com/onrik/logrus/filename"
 	"github.com/sirupsen/logrus"
 )
@@ -51,10 +52,14 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatal("can't create map")
 	}
-	path := mapBMSTU.Path(21-10, 32-10)
-	for _, p := range path {
-		fmt.Println(p + 10)
+	path, err := mapBMSTU.Path("TP", "21")
+	if err != nil {
+		log.WithError(err).Fatal("can't find path")
 	}
+	//for _, p := range path {
+	//	fmt.Println(p + 10)
+	//}
+	_, _ = pretty.Println(path)
 	return
 	mux := chi.NewRouter()
 	mux.Use(middleware.NoCache)
