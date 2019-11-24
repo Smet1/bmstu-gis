@@ -1,0 +1,8 @@
+serve_addr: ':8080'
+db:
+  database: 'postgres'
+  username: "smet_k"
+  password: "password"
+  name: 'gis'
+  ssl_mode: 'disable'
+  host: 'db-gis:5432'

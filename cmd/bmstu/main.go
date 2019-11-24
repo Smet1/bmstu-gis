@@ -93,7 +93,7 @@ func main() {
 	}
 
 	go func() {
-		log.Infof("syncing orders service started on port %s", cfg.ServeAddr)
+		log.Infof("pathfinding service started on port %s", cfg.ServeAddr)
 		if err = server.ListenAndServe(); err != nil {
 			if err == http.ErrServerClosed {
 				log.Info("graceful shutdown")
