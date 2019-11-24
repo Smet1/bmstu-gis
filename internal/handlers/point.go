@@ -10,12 +10,37 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	TypeStairs = "stairs"
+	TypeAll    = "all"
+	TypeEnds   = "ends"
+)
+
+type Points struct {
+	Data *db.ListPoints `json:"data"`
+	Type string         `json:"type"`
+}
+
 func GetGetPointsHandler(conn *sqlx.DB) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 		log := logger.GetLogger(req.Context())
+		pointType := req.URL.Query().Get("type")
 
 		listPoints := &db.ListPoints{}
-		err := listPoints.Get(conn)
+		var err error
+		typeRequest := ""
+		switch pointType {
+		case TypeStairs:
+			typeRequest = TypeStairs
+			err = listPoints.GetStairs(conn)
+		case TypeEnds:
+			typeRequest = TypeEnds
+			err = listPoints.GetEnds(conn)
+		default:
+			typeRequest = TypeAll
+			err = listPoints.Get(conn)
+		}
+
 		if err != nil {
 			log.WithError(err).Error("can't get points")
 
@@ -23,7 +48,12 @@ func GetGetPointsHandler(conn *sqlx.DB) http.HandlerFunc {
 			return
 		}
 
-		Response(res, http.StatusOK, listPoints)
+		points := Points{
+			Data: listPoints,
+			Type: typeRequest,
+		}
+
+		Response(res, http.StatusOK, points)
 	}
 }
 

@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/Smet1/bmstu-gis/internal/logger"
 	"github.com/Smet1/bmstu-gis/internal/pathfinding"
 	"github.com/jmoiron/sqlx"
-	"net/http"
 )
 
 func GetPathFindingHandler(conn *sqlx.DB, bmstuMap *pathfinding.Map) http.HandlerFunc {

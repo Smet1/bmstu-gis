@@ -59,3 +59,31 @@ FROM map_points
 
 	return nil
 }
+
+func (l *ListPoints) GetStairs(db *sqlx.DB) error {
+	query := `
+SELECT id, name, cabinet, stair, x, y, level, node_id
+FROM map_points
+WHERE stair is True
+`
+	err := db.Select(&l.Points, query)
+	if err != nil {
+		return errors.Wrap(err, "can't do query")
+	}
+
+	return nil
+}
+
+func (l *ListPoints) GetEnds(db *sqlx.DB) error {
+	query := `
+SELECT id, name, cabinet, stair, x, y, level, node_id
+FROM map_points
+WHERE cabinet is True
+`
+	err := db.Select(&l.Points, query)
+	if err != nil {
+		return errors.Wrap(err, "can't do query")
+	}
+
+	return nil
+}
